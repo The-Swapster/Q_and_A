@@ -1,0 +1,181 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+          <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+          <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+          <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title> Question & Answer Pair Generation</title>
+      </head>
+      
+      
+        <style>
+          body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif}
+          .w3-bar,h1,button {font-family: "Montserrat", sans-serif}
+          .fa-anchor,.fa-coffee {font-size:200px}
+          html {
+                    scroll-behavior: smooth;
+           }
+       
+          fieldset {
+                    background-color: #ffffff;
+                    font-family: montserrat;
+          }
+              
+          legend {
+                    background-color: gray;
+                    color: white;
+                    padding: 5px 10px;
+          }
+      
+          input {
+                    margin: 5px;
+                    font-family: montserrat
+          }
+      
+          header{
+                  
+                  background-color: #ff4339;
+                  padding: 5px;
+                  text-align: center;
+                  font-size: 25px;
+                  color: white;
+          }
+              
+          ul {
+                    list-style-type: none;
+                    margin: 0;
+                    padding: 0;
+                    overflow: hidden;
+                    background-color: #333;
+          }
+      
+          li {
+                    float: left;
+          }
+      
+          li a {
+                    display: block;
+                    color: white;
+                    text-align: center;
+                    padding: 14px 16px;
+                    text-decoration: none;
+          }
+      
+          li a:hover:not(.active) {
+                    background-color: #413d3d;
+                    font-family: montserrat
+          }	
+      
+          .active {
+                    background-color: #b80f0f;
+          }
+          
+          #Home {
+                    padding-bottom: 0.5%;
+                    
+          } 
+              
+          #about{
+                  padding-bottom: 0.5%;
+          }
+      
+      </style>
+      </head> 
+      
+      
+      <body style="background-color:#333;">
+      
+       <div class="login">
+           <header>
+              <h1 style = "font-family:Montserrat;text-align: center"> Question & Answer Pair Generation </h1>
+          </header>
+      </div>
+      
+      <div>
+          <ul>
+                <li><a class="active" href="#Home" style = "font-family: montserrat;" >Home</a></li>
+            
+                <li><a href="#about" style = "font-family: montserrat;">About</a></li>
+          </ul>
+      </div>
+      
+      <br>
+      
+      
+      <div class="w3-row-padding w3-padding-32 w3-container" style="background-color:#383838;color: #000000;">
+        <div class="w3-content">
+          <div>
+                  
+            <h1 style="color: #ffffff;"> Generate Pairs </h1>
+                  <p style="color: #ffffff;">Input Text file: in .docx OR .pdf format only</p>
+                  <p style="color: #ffffff;">We recomend using files with maximum 300 words</p>
+                  <p style="color: #ffffff;">Predicts different types of Q&A Pairs</p>
+                 <form action="/" name="form1" method = "POST" enctype="multipart/form-data">
+                <br>
+                    <fieldset style = "background-color: #ffffff; font-family: montserrat" >
+      
+                    <legend style="background-color:#333333;font-family: montserrat;">Enter the details:</legend>
+                    <br>Enter the question type<br>
+                    <select id='type' name='type'>
+                      <option value='boolean'>Boolean</option>
+                      <option value='mcq'>MCQ</option>
+                      <option value='faq'>FAQs</option>
+                    </select>
+                    <br> Please enter the number of questions to be generated <br>
+                    <input type="number" name='count' value=4>
+                    <br> Enter Text (optional) <br>
+                    <textarea name="text"></textarea>
+                    <br> Please input your file <br>
+                  <input type="file" name="myFile" id="myFile">
+                        
+            <br><br>
+            <button type="submit" class="btn btn-primary btn-block btn-large" style = "font-family: montserrat;" value = "submit"> Submit </button>
+          </fieldset>
+          {% if count == 3 %}
+          {% for i in range(msg|length) %}
+          <b style="color: #ffffff;">{{ i }}<br></b>
+          <b style="color: #ffffff;">Question:<br> {{ msg[i] }} </b><br>
+          <b style="color: #ffffff;">Options:<br> {{ op[i] }} </b><br>
+          <b style="color: #ffffff;">Answer:<br> {{ ans[i] }} </b><br><br>
+          {% endfor %}
+          {% elif count == 2 %}
+          {% for i in range(msg|length) %}
+          <b style="color: #ffffff;">{{ i+1 }}<br></b>
+          <b style="color: #ffffff;">Question:<br> {{ msg[i] }} </b><br>
+          <b style="color: #ffffff;">Answer:<br> {{ ans[i] }} </b><br><br>
+          {% endfor %}
+          {% endif %}
+          </form>
+          <a href="{{url_for('.download')}}" target='blank' style="color: #ffffff;">Download Questions</a>
+          </div>
+        </div>
+      </div>
+      
+      
+      <div class="main" id="about" >
+      
+      <div class="w3-row-padding w3-padding-32 w3-container" style="background-color:#383838;color: #FFFFFF;">
+        <div class="w3-content">
+          <div>
+            <h1>About</h1>
+                  <p>This predictor is based on Question-Answer Generation Pairs </p>
+              <h4>About the Model Used: </h4></p>
+                <p><strong> QuestGen AI </strong><br>
+                  </p>
+              </p>
+      
+              
+              </div>
+        </div>
+      </div>
+      
+      
+      </div>
+      <!-- Footer -->
+      <div class="w3-container w3-center" style="background-color:#383838;color: #FFFFFF;">
+          <a class="w3-xlarge w3-padding-32 w3-hover-opacity" target="_blank" style="text-decoration: none;"> Made by Anishka Moona & Swapnil Singh </a>&nbsp;&nbsp;&nbsp;&nbsp;
+      </div>
+      </body>
+</html>
