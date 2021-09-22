@@ -1,8 +1,6 @@
 from flask import Flask, render_template, request, send_file
 import PyPDF2
 import docx
-#import nltk
-#nltk.download('stopwords')
 from Questgen import main
 from sense2vec import Sense2Vec
 from fpdf import FPDF
@@ -26,7 +24,7 @@ def upload_file():
     c = int(c)
     pdf = FPDF()
     pdf.add_page()
-    pdf.set_font("Arial", size=15)
+    pdf.set_font("Arial", size=10)
     if text=="":
         if name[name.rfind("."):] == ".pdf":
             pdfReader = PyPDF2.PdfFileReader(uploaded_file)
@@ -68,14 +66,52 @@ def upload_file():
             counter = counter+1
             pdf.cell(200,10,txt='Question ', ln=counter, align='L')
             counter = counter+1
-            pdf.cell(200,10,txt=msg[i], ln=counter, align='L')
+            pdf.multi_cell(200,10,txt=msg[i], align='L')
             counter = counter+1
             pdf.cell(200,10,txt='Answer ', ln=counter, align='L')
             counter = counter+1
-            pdf.cell(200,10,txt=ans[i], ln=counter, align='L')
+            pdf.multi_cell(200,10,txt=ans[i], align='L')
             counter = counter+1
-        pdf.output('questions.pdf')
+        pdf.output('question.pdf')
         return render_template("home.html", msg=msg, ans=ans, count=count)
+    elif qtype == 'tf':
+        qb = main.BoolQGen()
+        payload = {
+            "input_text" : page_content,
+            "max_questions" : c
+        }
+        output = qb.predict_boolq(payload)
+        answer = main.AnswerPredictor()
+        ans = []
+        msg=output['Boolean Questions']
+        for i in output['Boolean Questions']:
+            payload = {
+                "input_text":page_content,
+                "input_question":i
+            }
+            ans.append(answer.predict_answer(payload))
+        count=2
+        pdf.cell(200,10,txt="True False Questions", ln=1, align='C')
+        counter = 2
+        ans_tf = []
+        for i in ans:
+            if 'Yes' == i[:3]:
+                ans_tf.append('True')
+            elif 'No' == i[:2]:
+                ans_tf.append('False')
+        for i in range(len(msg)):
+            pdf.cell(200,10,txt=str(i+1), ln=counter, align='L')
+            counter = counter+1
+            pdf.cell(200,10,txt='Question ', ln=counter, align='L')
+            counter = counter+1
+            pdf.multi_cell(200,10,txt=msg[i], align='L')
+            counter = counter+1
+            pdf.cell(200,10,txt='Answer ', ln=counter, align='L')
+            counter = counter+1
+            pdf.multi_cell(200,10,txt=ans_tf[i], align='L')
+            counter = counter+1
+        pdf.output('question.pdf')
+        return render_template("home.html", msg=msg, ans=ans_tf, count=count)
     elif qtype == 'mcq':
         mc = main.QGen()
         payload = {
@@ -100,17 +136,17 @@ def upload_file():
             counter = counter+1
             pdf.cell(200,10,txt='Question ', ln=counter, align='L')
             counter = counter+1
-            pdf.cell(200,10,txt=msg[i], ln=counter, align='L')
+            pdf.multi_cell(200,10,txt=msg[i], align='L')
             counter = counter+1
             pdf.cell(200,10,txt='Options ', ln=counter, align='L')
             counter = counter+1
-            pdf.cell(200,10,txt=str(op[i]), ln=counter, align='L')
+            pdf.multi_cell(200,10,txt=str(op[i]), align='L')
             counter = counter+1
             pdf.cell(200,10,txt='Answer ', ln=counter, align='L')
             counter = counter+1
-            pdf.cell(200,10,txt=ans[i], ln=counter, align='L')
+            pdf.multi_cell(200,10,txt=ans[i], align='L')
             counter = counter+1
-        pdf.output('questions.pdf')
+        pdf.output('question.pdf')
         return render_template("home.html", op=op, msg=msg, ans=ans, count=count)
     elif qtype == 'faq':
         fc = main.QGen()
@@ -132,18 +168,18 @@ def upload_file():
             counter = counter+1
             pdf.cell(200,10,txt='Question ', ln=counter, align='L')
             counter = counter+1
-            pdf.cell(200,10,txt=msg[i], ln=counter, align='L')
+            pdf.multi_cell(200,10,txt=msg[i], align='L')
             counter = counter+1
             pdf.cell(200,10,txt='Answer ', ln=counter, align='L')
             counter = counter+1
-            pdf.cell(200,10,txt=ans[i], ln=counter, align='L')
+            pdf.multi_cell(200,10,txt=ans[i], align='L')
             counter = counter+1
-        pdf.output('questions.pdf')
+        pdf.output('question.pdf')
         return render_template("home.html", msg=msg, ans=ans, count=count)
 
 @app.route('/download', methods=['GET'])
 def download():
-    path = os.path.join(r"C:\Users\Swapnil\Desktop\work", "questions.pdf")
+    path = os.path.join(r"C:\Users\Swapnil\Desktop\work", "question.pdf")
     return send_file(path, as_attachment=True)
 
 if __name__ == "__main__":
