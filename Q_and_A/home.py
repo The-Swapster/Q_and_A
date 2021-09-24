@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, send_file
 import PyPDF2
 import docx
+#import nltk
+#nltk.download('stopwords')
 from Questgen import main
 from sense2vec import Sense2Vec
 from fpdf import FPDF
@@ -176,6 +178,41 @@ def upload_file():
             counter = counter+1
         pdf.output('question.pdf')
         return render_template("home.html", msg=msg, ans=ans, count=count)
+    elif qtype == 'br':
+        fc = main.QGen()
+        answer = main.AnswerPredictor()
+        payload = {
+            "input_text" : page_content,
+            "max_questions" : c
+        }
+        output = fc.predict_shortq(payload)
+        ans = []
+        msg = []
+        for i in range(len(output['questions'])):
+            payload = {
+                "input_text":page_content,
+                "input_question": output['questions'][i]['Question']
+            }
+            ans.append(answer.predict_answer(payload))
+        for i in range(len(output['questions'])):
+            msg.append(output['questions'][i]['Question'])
+        count=2
+        pdf.cell(200,10,txt="FAQs", ln=1, align='C')
+        counter = 2
+        for i in range(len(msg)):
+            pdf.cell(200,10,txt=str(i+1), ln=counter, align='L')
+            counter = counter+1
+            pdf.cell(200,10,txt='Question ', ln=counter, align='L')
+            counter = counter+1
+            pdf.multi_cell(200,10,txt=msg[i], align='L')
+            counter = counter+1
+            pdf.cell(200,10,txt='Answer ', ln=counter, align='L')
+            counter = counter+1
+            pdf.multi_cell(200,10,txt=ans[i], align='L')
+            counter = counter+1
+        pdf.output('question.pdf')
+        return render_template("home.html", msg=msg, ans=ans, count=count)
+
 
 @app.route('/download', methods=['GET'])
 def download():
