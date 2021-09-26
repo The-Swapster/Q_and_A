@@ -49,6 +49,8 @@ Our system generates the following types of questions
 1. Boolean Questions
 2. One word answers
 3. Multiple Choice Questions
+4. True and False
+5. Breif Answer Questuons
 
 # Types of Inputs
 1. Text Input
